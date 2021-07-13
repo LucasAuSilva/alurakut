@@ -13,7 +13,8 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: sans-serif;
-    background-color: #D9E6F6;
+    background-image: url('/img/lotr.jpeg');
+    background-size: cover;
   }
 
   #__next {
@@ -27,6 +28,8 @@ const GlobalStyle = createGlobalStyle`
     height: auto;
     display: block;
   }
+
+  ${AlurakutStyles}
 `;
 
 const theme = {

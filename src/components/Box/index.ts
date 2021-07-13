@@ -8,6 +8,13 @@ export const Box = styled.div`
 
   padding: 16px;
 
+  .boxLink {
+    font-size: 14px;
+    color: #2e7bb4;
+    text-decoration: none;
+    font-weight: 800;
+  }
+
   .title {
     font-size: 32px;
     font-weight: 400;

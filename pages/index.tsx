@@ -4,10 +4,12 @@ import { Box } from '../src/components/Box';
 import { ProfileSideBar } from '../src/components/ProfileSideBar';
 
 import { AlurakutMenu, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import Relations from '../src/components/Relations';
+import { getFollow, getFollowers } from '../src/service/apiGitHub';
+import Input from '../src/components/Input';
 
-interface IComunidades {
+export interface IRelations {
   id: number
   title: string;
   img: string;
@@ -16,46 +18,22 @@ interface IComunidades {
 
 export default function Home() {
   const user = 'LucasAuSilva';
-  const link = '/users/'
-  const pessoasFavoritas = [
-    {
-      id: 1,
-      title: 'Guillescas',
-      link: link.concat('Guillescas')
-    },
-    {
-      id: 2,
-      title: 'peas',
-      link: link.concat('peas')
-    },
-    {
-      id: 3,
-      title: 'omariosouto',
-      link: link.concat('omariosouto')
-    },
-    {
-      id: 4,
-      title: 'rafaballerini',
-      link: link.concat('rafaballerini')
-    },
-    {
-      id: 5,
-      title: 'benawad',
-      link: link.concat('benawad')
-    },
-    {
-      id: 6,
-      title: 'felipefialho',
-      link: link.concat('felipefialho')
-    }
-  ]
 
-  const [comunidades, setComunidades] = useState<IComunidades[]>([{
+  const [seguindo, setSeguindo] = useState<IRelations[]>([]);
+
+  const [comunidades, setComunidades] = useState<IRelations[]>([{
     id: 123123,
     title: 'Eu odeio acordar cedo',
     img: 'https://alurakut.vercel.app/capa-comunidade-01.jpg',
     link: `/communities/${123123}`
   }]);
+
+  const [seguidores, setSeguidores] = useState<IRelations[]>([]);
+
+  useEffect(() => {
+    getFollowers(user, setSeguidores);
+    getFollow(user, setSeguindo);
+  }, []);
 
   function handleCreateCommunity(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault();
@@ -98,20 +76,29 @@ export default function Home() {
             <form onSubmit={handleCreateCommunity}>
 
               <div>
-                <input
+                <Input
                   type="text"
-                  placeholder="Qual vai ser o nome da sua comunidade?"
                   name="title"
-                  aria-label="Qual vai ser o nome da sua comunidade?"
+                  label="Nome da Comunidade"
+                  placeholder="Nome da Comunidade"
                   required
                 />
               </div>
               <div>
-                <input
+                <Input
                   type="text"
-                  placeholder="Coloque uma URL para colocarmos de capa"
                   name="image"
-                  aria-label="Coloque uma URL para colocarmos de capa"
+                  label="Url da imagem de capa"
+                  placeholder="Url da imagem de capa"
+                  required
+                />
+              </div>
+              <div>
+                <Input
+                  type="url"
+                  name="urlCommunity"
+                  label="Url da sua comunidade"
+                  placeholder="Url da sua comunidade"
                   required
                 />
               </div>
@@ -124,9 +111,14 @@ export default function Home() {
         </div>
         <div className="communityArea" style={{ gridArea: 'communityArea' }}>
           <Relations
-            title="Pessoas Favoritas"
-            items={pessoasFavoritas}
-            linkSeeAll="/users"
+            title="Seguidores"
+            items={seguidores}
+            linkSeeAll=""
+          />
+          <Relations
+            title="Seguindo"
+            items={seguindo}
+            linkSeeAll=""
           />
           <Relations
             title="Comunidade"

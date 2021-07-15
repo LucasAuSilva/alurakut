@@ -40,6 +40,8 @@ export default function Home() {
 
     const dados = new FormData(event.currentTarget);
 
+    console.log(dados);
+
     const title = dados.get('title') as string;
     const image = dados.get('image') as string;
     const id = new Date().getMilliseconds();
@@ -74,35 +76,21 @@ export default function Home() {
             <h2 className="subTitle">O que você deseja fazer?</h2>
 
             <form onSubmit={handleCreateCommunity}>
+              <Input
+                type="text"
+                name="title"
+                label="Nome da Comunidade"
+                placeholder="Nome da Comunidade"
+                required
+              />
 
-              <div>
-                <Input
-                  type="text"
-                  name="title"
-                  label="Nome da Comunidade"
-                  placeholder="Nome da Comunidade"
-                  required
-                />
-              </div>
-              <div>
-                <Input
-                  type="text"
-                  name="image"
-                  label="Url da imagem de capa"
-                  placeholder="Url da imagem de capa"
-                  required
-                />
-              </div>
-              <div>
-                <Input
-                  type="url"
-                  name="urlCommunity"
-                  label="Url da sua comunidade"
-                  placeholder="Url da sua comunidade"
-                  required
-                />
-              </div>
-
+              <Input
+                type="text"
+                name="image"
+                label="Url da imagem de capa"
+                placeholder="Url da imagem de capa"
+                required
+              />
               <button>
                 Criar comunidade
               </button>

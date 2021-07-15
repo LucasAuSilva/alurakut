@@ -82,5 +82,5 @@ export const getFollow = async (
         img: follow.avatar_url,
         link: follow.html_url
       }
-    }))
+    }));
 };

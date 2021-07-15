@@ -26,7 +26,7 @@ const Relations = ({ title, items, linkSeeAll }: IRelationsProps): JSX.Element =
           }
           return (
             <li key={item.id}>
-              <a href={`/users/${item.title}`}>
+              <a href={item.link}>
                 <img
                   src={item.img ? item.img : `https://github.com/${item.title}.png`}
                   alt="Imagem de Perfil"

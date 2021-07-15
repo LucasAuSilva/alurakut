@@ -4,10 +4,15 @@ import { Box } from '../src/components/Box';
 import { ProfileSideBar } from '../src/components/ProfileSideBar';
 
 import { AlurakutMenu, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
-import { FormEvent, useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Relations from '../src/components/Relations';
 import { getFollow, getFollowers } from '../src/service/apiGitHub';
 import Input from '../src/components/Input';
+import { Form } from '@unform/web';
+import { FormHandles } from '@unform/core'
+import { getCommunities } from '../src/service/apiDatoCms';
+import { post } from '../src/service/apiNext';
+import { ICommunity, ICreateCommunity } from '../src/@types';
 
 export interface IRelations {
   id: number
@@ -16,45 +21,48 @@ export interface IRelations {
   link: string
 }
 
+interface IFormData {
+  title: string;
+  image: string;
+}
+
 export default function Home() {
   const user = 'LucasAuSilva';
 
   const [seguindo, setSeguindo] = useState<IRelations[]>([]);
 
-  const [comunidades, setComunidades] = useState<IRelations[]>([{
-    id: 123123,
-    title: 'Eu odeio acordar cedo',
-    img: 'https://alurakut.vercel.app/capa-comunidade-01.jpg',
-    link: `/communities/${123123}`
-  }]);
+  const formRef = useRef<FormHandles>(null)
+
+  const [comunidades, setComunidades] = useState<IRelations[]>([]);
 
   const [seguidores, setSeguidores] = useState<IRelations[]>([]);
 
   useEffect(() => {
     getFollowers(user, setSeguidores);
     getFollow(user, setSeguindo);
+
+    getCommunities(setComunidades);
   }, []);
 
-  function handleCreateCommunity(event: FormEvent<HTMLFormElement>): void {
-    event.preventDefault();
+  function handleSubmit(data: IFormData) {
 
-    const dados = new FormData(event.currentTarget);
+    post<ICreateCommunity>('/api/createCommunities', {
+      title: data.title,
+      creatorSlug: user,
+      imageUrl: data.image
+    }).then((community: ICommunity) => {
+      console.log(community);
 
-    console.log(dados);
-
-    const title = dados.get('title') as string;
-    const image = dados.get('image') as string;
-    const id = new Date().getMilliseconds();
-
-    if (title && image) {
       const comunidadesAtualizadas = [...comunidades, {
-        id: id,
-        title: title,
-        img: image,
-        link: `/communities/${id}`
+        id: community.id,
+        title: community.title,
+        img: community.imageUrl,
+        link: `/communities/${community.id}`
       }];
       setComunidades(comunidadesAtualizadas);
-    }
+    }).catch((error) => {
+      console.error(error);
+    });
   }
 
   return (
@@ -75,7 +83,7 @@ export default function Home() {
           <Box>
             <h2 className="subTitle">O que você deseja fazer?</h2>
 
-            <form onSubmit={handleCreateCommunity}>
+            <Form ref={formRef} onSubmit={handleSubmit}>
               <Input
                 type="text"
                 name="title"
@@ -85,16 +93,20 @@ export default function Home() {
               />
 
               <Input
-                type="text"
+                type="url"
                 name="image"
                 label="Url da imagem de capa"
                 placeholder="Url da imagem de capa"
                 required
               />
+
               <button>
                 Criar comunidade
               </button>
-            </form>
+            </Form>
+          </Box>
+          <Box>
+
           </Box>
         </div>
         <div className="communityArea" style={{ gridArea: 'communityArea' }}>

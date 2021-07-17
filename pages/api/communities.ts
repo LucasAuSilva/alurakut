@@ -1,6 +1,6 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { ICreatePosts } from '../../src/@types';
+import { ICreateCommunity } from '../../src/@types';
 const { SiteClient } = require('datocms-client');
 
 export default async function createCommunities(
@@ -8,7 +8,7 @@ export default async function createCommunities(
   res: NextApiResponse
 ) {
 
-  const modelId = process.env.MODEL_ID_POST;
+  const modelId = process.env.MODEL_ID_COMMUNITY;
 
   const client = new SiteClient(process.env.TOKEN_READ_WRITE);
 
@@ -28,7 +28,7 @@ export default async function createCommunities(
     }
 
   } else if (req.method == 'POST') {
-    const data: ICreatePosts = req.body;
+    const data: ICreateCommunity = req.body;
 
     const record = await client.items.create({
       itemType: modelId, // model ID created for datoCMS

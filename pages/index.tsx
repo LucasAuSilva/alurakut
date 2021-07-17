@@ -53,7 +53,17 @@ export default function Home({ user }: InferGetServerSidePropsType<typeof getSer
     getFollowers(user, setSeguidores);
     getFollow(user, setSeguindo);
 
-    getCommunities(setComunidades);
+    get('/communities').then((data: ICommunity[]) => {
+      const datoCommunities: IRelations[] = data.map(({ id, title, imageUrl }) => {
+        return {
+          id,
+          title,
+          img: imageUrl,
+          link: `/communities/${id}`
+        }
+      })
+      setComunidades(datoCommunities)
+    })
 
     get('/posts').then((data: IPostsDato[]) => {
       const datoPosts: IPosts[] = data.map(({ id, author, text }) => {
@@ -64,11 +74,10 @@ export default function Home({ user }: InferGetServerSidePropsType<typeof getSer
           iconUser: `https://github.com/${author}.png`
         }
       })
-
-      setPosts([...posts, ...datoPosts]);
+      setPosts(datoPosts);
       setPostsLoading(false);
     })
-  }, [user]);
+  }, []);
 
   function handleSubmitCommunity(data: IFormDataCommunity) {
 

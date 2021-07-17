@@ -15,6 +15,7 @@ const GlobalStyle = createGlobalStyle`
     font-family: sans-serif;
     background-image: url('/img/lotr.jpeg');
     background-size: cover;
+    background-repeat: no-repeat;
   }
 
   #__next {

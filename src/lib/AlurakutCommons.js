@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import NextLink from 'next/link';
+import nookies from 'nookies';
 
 const BASE_URL = 'http://alurakut.vercel.app/';
 const v = '1';
@@ -27,7 +28,7 @@ export function AlurakutMenu({ githubUser }) {
         <AlurakutMenu.Logo src={`${BASE_URL}/logo.svg`} />
 
         <nav style={{ flex: 1 }}>
-          {[{ name: 'Inicio', slug: '/'}, {name: 'Amigos', slug: '/amigos'}, {name: 'Comunidades', slug: '/comunidades'}].map((menuItem) => (
+          {[{ name: 'Inicio', slug: '/'}, {name: 'Amigos', slug: '/amigos'}, {name: 'Comunidades', slug: '/communities'},  {name: 'Posts', slug: '/posts'}].map((menuItem) => (
             <Link key={`key__${menuItem.name.toLocaleLowerCase()}`} href={`${menuItem.slug.toLocaleLowerCase()}`}>
               {menuItem.name}
             </Link>
@@ -35,7 +36,11 @@ export function AlurakutMenu({ githubUser }) {
         </nav>
 
         <nav>
-          <a href={`/logout`}>
+          <a href={`/login`} onClick={(event) => {
+            nookies.destroy(null, 'USER_TOKEN', {
+              path: '/'
+            })
+          }}>
             Sair
           </a>
           <div>
@@ -217,7 +222,7 @@ export function AlurakutProfileSidebarMenuDefault() {
           <img src={`${BASE_URL}/icons/plus.svg`} />
             GitHub Trends
           </a>
-        <a href="/logout">
+        <a href="/login" onClick={() => nookies.destroy(null, 'USER_TOKEN')}>
           <img src={`${BASE_URL}//icons/logout.svg`} />
             Sair
           </a>

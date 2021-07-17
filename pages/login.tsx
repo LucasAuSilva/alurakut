@@ -1,20 +1,23 @@
 import { Form } from '@unform/web';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Input from '../src/components/Input';
 import { useRouter } from 'next/router';
 import { FormHandles } from '@unform/core';
 import { postAlurakut } from '../src/service/apiAlurakut';
 import nookies from 'nookies';
+import LoadingDots from '../src/components/Loading/LoadingDots';
 
 interface IFormLoginData {
   user: string;
 }
 
 const Login = () => {
+  const [ isLoading, setLoading ] = useState(false);
   const router = useRouter();
   const formRef = useRef<FormHandles>(null);
 
   function handleSubmit(data: IFormLoginData) {
+    setLoading(true);
 
     formRef.current?.setErrors({})
 
@@ -24,6 +27,8 @@ const Login = () => {
         ...formRef.current.getErrors,
         user: 'O usuário deve ser preenchido'
       });
+
+      setLoading(false)
       return
     }
 
@@ -32,9 +37,12 @@ const Login = () => {
         path: '/',
         maxAge: 86400 * 7
       });
+    }).then( () => router.push('/'))
+    .catch((error) => {
+      console.log(error);
     });
 
-    router.push('/');
+    setLoading(false)
   }
 
   return (
@@ -60,7 +68,7 @@ const Login = () => {
               placeholder="Usuário"
             />
             <button type="submit">
-              Login
+              {isLoading ? <LoadingDots size={50} /> : 'Login'}
             </button>
           </Form>
 

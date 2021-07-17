@@ -6,18 +6,19 @@ import { ProfileSideBar } from '../src/components/ProfileSideBar';
 import { AlurakutMenu, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
 import React, { useEffect, useRef, useState } from 'react';
 import Relations from '../src/components/Relations';
-import { getFollow, getFollowers } from '../src/service/apiGitHub';
+import { getFollow, getFollowers, getUser } from '../src/service/apiGitHub';
 import Input from '../src/components/Input';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core'
 import { getCommunities } from '../src/service/apiDatoCms';
-import { post } from '../src/service/apiNext';
-import { ICommunity, ICreateCommunity, IPosts, ITokenInfos } from '../src/@types';
+import { get, post } from '../src/service/apiNext';
+import { ICommunity, ICreateCommunity, ICreatePosts, IPosts, IPostsDato, ITokenInfos } from '../src/@types';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import nookies from 'nookies';
 import jsonwebtoken from 'jsonwebtoken';
 import { getAlurakut } from '../src/service/apiAlurakut';
 import Posts from '../src/components/Posts/Index';
+import LoadingDots from '../src/components/Loading/LoadingDots';
 
 export interface IRelations {
   id: number
@@ -36,39 +37,42 @@ interface IFormDataPost {
   text: string;
 }
 
-interface ServerProps {
-  nameUser: string;
-}
-
 export default function Home({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
-  const [seguindo, setSeguindo] = useState<IRelations[]>([]);
-
-  const formRef = useRef<FormHandles>(null)
-
-  const [posts, setPosts] = useState<IPosts[]>([
-    {
-      id: 341241234,
-      author: 'peas',
-      iconUser: 'https://github.com/peas.png',
-      text: 'Testanto posts'
-    },
-  ])
+  const [ postsLoading, setPostsLoading ] = useState(true);
+  const [ postsLoadingCreate, setPostsLoadingCreate ] = useState(false);
 
   const [comunidades, setComunidades] = useState<IRelations[]>([]);
-
   const [seguidores, setSeguidores] = useState<IRelations[]>([]);
+  const [seguindo, setSeguindo] = useState<IRelations[]>([]);
+  const [posts, setPosts] = useState<IPosts[]>([]);
+
+  const formRef = useRef<FormHandles>(null)
 
   useEffect(() => {
     getFollowers(user, setSeguidores);
     getFollow(user, setSeguindo);
 
     getCommunities(setComunidades);
+
+    get('/posts').then((data: IPostsDato[]) => {
+      const datoPosts: IPosts[] = data.map(({ id, author, text }) => {
+         return {
+          id,
+          author,
+          text,
+          iconUser: `https://github.com/${author}.png`
+        }
+      })
+
+      setPosts([...posts, ...datoPosts]);
+      setPostsLoading(false);
+    })
   }, [user]);
 
   function handleSubmitCommunity(data: IFormDataCommunity) {
 
-    post<ICreateCommunity>('/api/communities', {
+    post<ICreateCommunity>('/communities', {
       title: data.title,
       creatorSlug: user,
       imageUrl: data.image
@@ -87,8 +91,24 @@ export default function Home({ user }: InferGetServerSidePropsType<typeof getSer
     });
   }
 
-  function handleSubmitPost(data: IFormDataPost) {
-    console.log(data.username);
+  async function handleSubmitPost(data: IFormDataPost) {
+
+    setPostsLoadingCreate(true);
+    post<ICreatePosts>('/posts', {
+      author: data.username,
+      text: data.text
+    }).then((values: IPostsDato) => {
+
+      const postsAtualizados: IPosts[] = [...posts, {
+        id: values.id,
+        author: values.author,
+        iconUser: `https://github.com/${values.author}.png`,
+        text: values.text
+      }]
+
+      setPosts(postsAtualizados);
+      setPostsLoadingCreate(false);
+    })
   }
 
   return (
@@ -153,15 +173,15 @@ export default function Home({ user }: InferGetServerSidePropsType<typeof getSer
               />
 
               <button>
-                Criar Post
+                { postsLoadingCreate ? <LoadingDots size={20}/> : 'Criar Post' }
               </button>
 
             </Form>
           </Box>
           <Box>
-            <h2 className="subTitle">Posts da galera</h2>
+            <h2 className="subTitle">Posts da galera ({posts.length})</h2>
 
-            <Posts items={posts} />
+            <Posts isLoading={postsLoading} linkSeeAll="/posts" items={posts} />
 
           </Box>
         </div>

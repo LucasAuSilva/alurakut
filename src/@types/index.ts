@@ -28,3 +28,15 @@ export interface IPosts {
   text: string;
   iconUser: string;
 }
+
+export interface IPostsDato {
+  id: number;
+  author: string;
+  text: string;
+  createdAt: Date;
+}
+
+export interface ICreatePosts {
+  author: string;
+  text: string;
+}

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Dispatch, SetStateAction } from 'react';
 import { ICommunity } from '../@types';
 
-const api = axios.create(
+export const api = axios.create(
   {
     baseURL: 'https://graphql.datocms.com/',
     headers: {

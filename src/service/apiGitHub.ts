@@ -87,8 +87,8 @@ export const getFollow = async (
 
 export const getUser = async (
   user: string
-) => {
+): Promise<IGitHubApi> => {
   const res = await api.get(`/users/${user}`);
 
-  return res.status;
+  return res.data;
 }

@@ -189,7 +189,18 @@ export default function Home({ user }: InferGetServerSidePropsType<typeof getSer
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
 
+
   const token = nookies.get(context).USER_TOKEN;
+
+  if (!token) {
+    return {
+      props: {},
+      redirect: {
+        destination: '/login',
+        permanent: false
+      }
+    }
+  }
 
   const { isAuthenticated } = await getAlurakut('/auth', token);
 

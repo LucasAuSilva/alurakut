@@ -156,6 +156,7 @@ AlurakutMenu.Wrapper = styled.header`
       ::placeholder {
         color: #ffffff;
         opacity: 1;
+        visibility: none;
       }
     }
   }
@@ -417,20 +418,15 @@ const AlurakutLoginScreen = css`
         }
         p {
           font-size: 14px;
+          margin-bottom: 10px;
         }
         a {
           text-decoration: none;
           color: var(--colorPrimary);
         }
         input {
-          width: 100%;
-          display: block;
           border: 1px solid var(--textQuarternaryColor);
-          padding: 12px;
-          background-color: var(--backgroundTertiary);
-          border-radius: var(--commonRadius);
-          margin-top: 24px;
-          margin-bottom: 16px;
+          background-color: var(--backgroundTertiary)
         }
         button {
           width: 100%;

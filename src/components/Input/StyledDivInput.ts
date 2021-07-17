@@ -5,11 +5,14 @@ export const StyledDivInput = styled.div`
 
 position: relative;
 
+margin-top: 5px;
+margin-bottom: 10px;
+
 input {
   width: 100%;
   background-color: #F4F4F4;
   color: #333333;
-  border: 0;
+  border: 1px solid #33333357;
   padding: 18px 16px;
   margin-bottom: 14px;
   border-radius: 10px;
@@ -19,6 +22,7 @@ input {
     color: #333333;
     opacity: 0;
     visibility: none;
+    display: none;
   }
 
   :focus + label,
@@ -44,5 +48,9 @@ label {
   opacity: 1;
 
   transition: all .25s;
+}
+
+span {
+  color: red;
 }
 `;

@@ -7,7 +7,7 @@ const api = axios.create(
   {
     baseURL: 'https://graphql.datocms.com/',
     headers: {
-      'Authorization': 'eb2c494edf5578ab97b84309d1f771',
+      'Authorization': process.env.NEXT_PUBLIC_TOKEN_READ_ONLY,
       'Content-type': 'application/json',
       'Accept': 'application/json'
     }

@@ -16,3 +16,11 @@ export async function post<T>(
 
   return res.data;
 }
+
+export async function get(
+  url: string,
+) {
+  const res = await api.get(url);
+
+  return res.data
+}

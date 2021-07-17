@@ -14,7 +14,7 @@ type InputProps = JSX.IntrinsicElements['input'] & Props;
 const Input = ({ name, label, value, ...rest }: InputProps): JSX.Element => {
 
   const inputRef = useRef(null)
-  const { fieldName, defaultValue, registerField } = useField(name)
+  const { fieldName, defaultValue, registerField, error } = useField(name)
 
   const defaultInputValue = value || defaultValue
 
@@ -32,7 +32,7 @@ const Input = ({ name, label, value, ...rest }: InputProps): JSX.Element => {
         ref.current.value = ''
       },
     })
-  }, [fieldName, registerField])
+  }, [fieldName, registerField, error])
 
   return (
     <StyledDivInput>
@@ -43,6 +43,7 @@ const Input = ({ name, label, value, ...rest }: InputProps): JSX.Element => {
         {...rest}
       />
       <label htmlFor={fieldName}>{label}</label>
+      { error && <span className="error">{error}</span> }
     </StyledDivInput>
   )
 }

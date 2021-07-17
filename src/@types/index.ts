@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken";
 
 export interface ICreateCommunity {
   title: string;
@@ -14,3 +15,16 @@ export interface ICommunity {
   updatedAt: Date;
 }
 
+export interface ITokenInfos extends JwtPayload {
+  githubUser: string;
+  roles: string[];
+  iat: number;
+  exp: number;
+}
+
+export interface IPosts {
+  id: number;
+  author: string;
+  text: string;
+  iconUser: string;
+}

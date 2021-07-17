@@ -30,6 +30,12 @@ const GlobalStyle = createGlobalStyle`
   }
 
   ${AlurakutStyles}
+
+  input {
+    ::placeholder {
+      visibility: none;
+    }
+  }
 `;
 
 const theme = {

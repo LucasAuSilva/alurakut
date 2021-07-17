@@ -4,7 +4,7 @@ import { Box } from '../src/components/Box';
 import { ProfileSideBar } from '../src/components/ProfileSideBar';
 
 import { AlurakutMenu, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Relations from '../src/components/Relations';
 import { getFollow, getFollowers } from '../src/service/apiGitHub';
 import Input from '../src/components/Input';
@@ -12,7 +12,12 @@ import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core'
 import { getCommunities } from '../src/service/apiDatoCms';
 import { post } from '../src/service/apiNext';
-import { ICommunity, ICreateCommunity } from '../src/@types';
+import { ICommunity, ICreateCommunity, IPosts, ITokenInfos } from '../src/@types';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import nookies from 'nookies';
+import jsonwebtoken from 'jsonwebtoken';
+import { getAlurakut } from '../src/service/apiAlurakut';
+import Posts from '../src/components/Posts/Index';
 
 export interface IRelations {
   id: number
@@ -21,17 +26,34 @@ export interface IRelations {
   link: string
 }
 
-interface IFormData {
+interface IFormDataCommunity {
   title: string;
   image: string;
 }
 
-export default function Home() {
-  const user = 'LucasAuSilva';
+interface IFormDataPost {
+  username: string;
+  text: string;
+}
+
+interface ServerProps {
+  nameUser: string;
+}
+
+export default function Home({ user }: InferGetServerSidePropsType<typeof getServerSideProps>) {
 
   const [seguindo, setSeguindo] = useState<IRelations[]>([]);
 
   const formRef = useRef<FormHandles>(null)
+
+  const [posts, setPosts] = useState<IPosts[]>([
+    {
+      id: 341241234,
+      author: 'peas',
+      iconUser: 'https://github.com/peas.png',
+      text: 'Testanto posts'
+    },
+  ])
 
   const [comunidades, setComunidades] = useState<IRelations[]>([]);
 
@@ -42,11 +64,11 @@ export default function Home() {
     getFollow(user, setSeguindo);
 
     getCommunities(setComunidades);
-  }, []);
+  }, [user]);
 
-  function handleSubmit(data: IFormData) {
+  function handleSubmitCommunity(data: IFormDataCommunity) {
 
-    post<ICreateCommunity>('/api/createCommunities', {
+    post<ICreateCommunity>('/api/communities', {
       title: data.title,
       creatorSlug: user,
       imageUrl: data.image
@@ -63,6 +85,10 @@ export default function Home() {
     }).catch((error) => {
       console.error(error);
     });
+  }
+
+  function handleSubmitPost(data: IFormDataPost) {
+    console.log(data.username);
   }
 
   return (
@@ -83,7 +109,7 @@ export default function Home() {
           <Box>
             <h2 className="subTitle">O que você deseja fazer?</h2>
 
-            <Form ref={formRef} onSubmit={handleSubmit}>
+            <Form ref={formRef} onSubmit={handleSubmitCommunity}>
               <Input
                 type="text"
                 name="title"
@@ -96,7 +122,7 @@ export default function Home() {
                 type="url"
                 name="image"
                 label="Url da imagem de capa"
-                placeholder="Url da imagem de capa"
+                placeholder="Url da image de capa"
                 required
               />
 
@@ -106,6 +132,36 @@ export default function Home() {
             </Form>
           </Box>
           <Box>
+            <h2 className="subTitle">Coloque um comentário legal :)</h2>
+
+            <Form onSubmit={handleSubmitPost}>
+
+              <Input
+                type="text"
+                name="username"
+                label="Seu nome no Github"
+                placeholder="Seu nome no Github"
+                required
+              />
+
+              <Input
+                type="textarea"
+                name="text"
+                label="Escreva alguma coisa"
+                placeholder="Escreva alguma coisa"
+                required
+              />
+
+              <button>
+                Criar Post
+              </button>
+
+            </Form>
+          </Box>
+          <Box>
+            <h2 className="subTitle">Posts da galera</h2>
+
+            <Posts items={posts} />
 
           </Box>
         </div>
@@ -130,3 +186,33 @@ export default function Home() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+
+  const token = nookies.get(context).USER_TOKEN;
+
+  const { isAuthenticated } = await getAlurakut('/auth', token);
+
+  if (!isAuthenticated) {
+    return {
+      props: { error: 'Usuário não é válido' },
+      redirect: {
+        destination: '/login',
+        permanent: false
+      }
+    }
+  }
+
+  const tokenInfos = jsonwebtoken.decode(token, {
+    json: true,
+    complete: true
+  })
+
+  const userLogin = tokenInfos?.payload as ITokenInfos;
+
+  return {
+    props: {
+      user: userLogin.githubUser
+    }
+  }
+};

@@ -10,19 +10,13 @@
 
 ## Versioning
 
----
-
 This project doesn't have versioning.
 
 ## History
 
----
-
 Check [Releases](https://github.com/LucasAuSilva/alurakut/releases) for details.
 
 ## Features
-
----
 
 ### Login
 
@@ -36,7 +30,5 @@ Check [Releases](https://github.com/LucasAuSilva/alurakut/releases) for details.
 > ![Profile page](./public/readme/profile-page.png)
 
 ## License
-
----
 
 [MIT](https://github.com/LucasAuSilva/alurakut/blob/main/LICENSE)
